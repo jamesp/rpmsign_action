@@ -1,0 +1,50 @@
+name: build-stack
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create spec
+        run: |
+          mkdir specs
+          cat <<EOF > specs/test.spec
+          Name: Hello
+          Version: 1
+          Release: 0
+          License: BSD
+          Summary: A simple test
+
+          %description
+          This is a description
+
+          %prep
+          rm -rf \$RPM_BUILD_ROOT
+
+          %install
+          mkdir -p \$RPM_BUILD_ROOT/pkg
+          touch \$RPM_BUILD_ROOT/pkg/hello.txt
+
+          %clean
+          rm -rf \$RPM_BUILD_ROOT
+
+          %files
+          /pkg/hello.txt
+          EOF
+
+      - uses: ./.github/actions/sign-rpm
+        with:
+          gpg-key: ${{ secrets.GPG_SIGNING_KEY }}
+          gpg-name: RPM Sign
+          gpg-passphrase: aaa
+
+      - name: check files
+        run: |
+          ls *

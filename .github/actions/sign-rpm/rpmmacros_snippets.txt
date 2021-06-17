@@ -1,0 +1,35 @@
+## Snippets
+
+Attempts at avoiding a password prompt from rpmsign.  These snippets
+may work with ubuntu-latest, but versions of rpmsign and gpg
+on centos7 do not.  
+
+Fallback to generating an expect script based on 
+https://aaronhawley.livejournal.com/10615.html
+
+%__gpg_check_password_cmd /bin/true
+%__gpg_sign_cmd     %{__gpg} \
+     gpg --batch --verbose --no-armor \
+     --pinentry-mode loopback \
+     --passphrase-file /home/builder/passphrase \
+     %{?_gpg_digest_algo:--digest-algo %{_gpg_digest_algo}} \
+     --no-secmem-warning \
+     -u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
+
+
+%__gpg_sign_cmd %{__gpg} \
+    gpg --batch --verbose --no-armor --no-secmem-warning \
+    --pinentry-mode loopback \
+    --passphrase-file /home/builder/passphrase \
+    %{?_gpg_digest_algo:--digest-algo %{_gpg_digest_algo}} \
+    -u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
+
+
+%__gpg_sign_cmd %{__gpg} gpg --force-v3-sigs --batch --pinentry-mode loopback --passphrase-file /home/builder/passphrase --verbose --no-armor --no-secmem-warning -u "%{_gpg_name}" -sbo %{__signature_filename} --digest-algo sha256 %{__plaintext_filename}'
+
+
+%_sourcedir %{_topdir}
+%_builddir  %{_topdir}
+%_specdir   %{_topdir}
+%_rpmdir    %{_topdir}
+%_srcrpmdir %{_topdir}

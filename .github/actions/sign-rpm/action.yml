@@ -1,0 +1,25 @@
+# action.yml
+name: 'RPM Sign'
+description: 'Sign a folder of RPMs.'
+inputs:
+  rpm-dir:  # id of input
+    description: 'Directory of RPMs to sign'
+    required: true
+    default: specs
+  gpg-key:
+    description: 'Base64 encoded GPG key for signing rpms'
+    required: true
+  gpg-passphrase:
+    description: 'Passphrase for the GPG key'
+    required: true
+  gpg-name:
+    description: 'The name of for the GPG user'
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.rpm-dir }}
+    - ${{ inputs.gpg-name }}
+    - ${{ inputs.gpg-passphrase}}
+    - ${{ inputs.gpg-key }}

@@ -1,0 +1,4 @@
+%_topdir    /home/builder/rpmbuild
+%_signature gpg
+%_gpg_path /home/builder/.gnupg
+%__gpg /usr/bin/gpg
